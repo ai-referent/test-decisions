@@ -32,36 +32,26 @@ SYSTEM_PROMPTS = {
 
 
 async def decide(client: httpx.AsyncClient, prompt: str) -> str:
-    """Demande à kev quelle option de routage s'applique au prompt."""
-    # Schéma de requête supposé (format systemone : un état + des questions
-    # typées). À vérifier dans la doc Ollama si le serveur renvoie une 4xx.
+    """Demande à kev quelle option de routage s'applique au prompt.
+
+    Voir https://docs.ollama.com/api/systemone
+    """
     payload = {
         "model": DECISION_MODEL,
         "state": prompt,
-        "questions": [
-            {"id": "routing", "type": "choice", "options": ROUTING_OPTIONS},
-        ],
+        "questions": {
+            "routing": {
+                "type": "choice",
+                "instructions": "How should this query be handled?",
+                "criteria": ROUTING_OPTIONS,
+            },
+        },
     }
     response = await client.post(OLLAMA_DECISION, json=payload)
     response.raise_for_status()
-    return parse_choice(response.json(), "routing")
-
-
-def parse_choice(data: dict, question_id: str) -> str:
-    """Extrait l'option choisie pour une question.
-
-    Accepte les réponses sous forme de dict {id: réponse} ou de liste
-    [{"id": ..., ...}], la réponse portant l'option dans "choice" ou "answer".
-    """
-    answers = data.get("answers", data)
-    if isinstance(answers, list):
-        answers = {a.get("id"): a for a in answers}
-    answer = answers[question_id]
-    if isinstance(answer, dict):
-        answer = answer.get("choice") or answer.get("answer")
-    if answer not in ROUTING_OPTIONS:
-        raise ValueError(f"Réponse de routage inattendue : {data!r}")
-    return answer
+    answer = response.json()["answers"]["routing"]
+    print(f"[routage] {answer['choice']} (confiance {answer['confidence']:.2f})")
+    return answer["choice"]
 
 
 async def ask_brain(client: httpx.AsyncClient, prompt: str, route: str) -> str:
@@ -84,7 +74,6 @@ async def ask_brain(client: httpx.AsyncClient, prompt: str, route: str) -> str:
 
 async def execute(client: httpx.AsyncClient, prompt: str) -> str:
     route = await decide(client, prompt)
-    print(f"[routage] {route}")
     if route == "Reject":
         return "Unauthorized request"
     return await ask_brain(client, prompt, route)

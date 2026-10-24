@@ -5,7 +5,7 @@ un modèle « cerveau » répond.
 
 ## router.py
 
-1. `kev:4b` (endpoint de décision Ollama `/v1/systemone`) classe le prompt :
+1. `kev:4b` ([endpoint de décision Ollama `/v1/systemone`](https://docs.ollama.com/api/systemone)) classe le prompt :
    `Reasoning`, `Chat` ou `Reject`.
 2. `Reject` renvoie `Unauthorized request`.
 3. `Chat` et `Reasoning` envoient le prompt à `deepseek-r1:14b` (`/api/chat`) avec
