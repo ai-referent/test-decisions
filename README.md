@@ -12,10 +12,13 @@ un modèle « cerveau » répond.
    un message système adapté ; la réflexion du modèle n'est activée que pour `Reasoning`.
 
 ```bash
-ollama pull kev:4b
-ollama pull deepseek-r1:14b
-pip install -r requirements.txt
-python router.py
+./setup.sh                      # installe Ollama, les modèles et le venv Python
+.venv/bin/python router.py
 ```
 
-`OLLAMA_HOST` (défaut `http://localhost:11434`) permet de viser un autre serveur.
+Variables d'environnement : `DECISION_MODEL` (défaut `kev:4b`), `BRAIN_MODEL`
+(défaut `deepseek-r1:14b`) et `OLLAMA_HOST` (défaut `http://localhost:11434`).
+Les mêmes valeurs servent à `setup.sh` et à `router.py`.
+
+Budget VRAM (16 Go) : `deepseek-r1:14b` en q4 occupe environ 9 Go, cache compris ;
+il reste de la place pour un `kev:4b` en q4 ou q8, mais pas pour une variante fp16.

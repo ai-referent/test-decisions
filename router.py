@@ -16,8 +16,8 @@ OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_DECISION = f"{OLLAMA_HOST}/v1/systemone"
 OLLAMA_BRAIN = f"{OLLAMA_HOST}/api/chat"
 
-DECISION_MODEL = "kev:4b"
-BRAIN_MODEL = "deepseek-r1:14b"
+DECISION_MODEL = os.environ.get("DECISION_MODEL", "kev:4b")
+BRAIN_MODEL = os.environ.get("BRAIN_MODEL", "deepseek-r1:14b")
 
 ROUTING_OPTIONS = {
     "Reasoning": "The query requires complex reasoning",
