@@ -18,6 +18,10 @@ OLLAMA_BRAIN = f"{OLLAMA_HOST}/api/chat"
 
 DECISION_MODEL = os.environ.get("DECISION_MODEL", "kev:4b-q8_0")
 BRAIN_MODEL = os.environ.get("BRAIN_MODEL", "deepseek-r1:14b")
+# Taille du contexte du cerveau, en tokens. Le cache KV qui va avec occupe de la
+# VRAM (environ 1,5 Go pour 8192 tokens avec deepseek-r1:14b) ; la réflexion
+# compte dans ce contexte, donc trop petit, elle est tronquée.
+BRAIN_NUM_CTX = int(os.environ.get("BRAIN_NUM_CTX", "8192"))
 
 ROUTING_OPTIONS = {
     "Reasoning": "The query requires complex reasoning",
@@ -65,6 +69,7 @@ async def ask_brain(client: httpx.AsyncClient, prompt: str, route: str) -> str:
         # deepseek-r1 réfléchit longuement par défaut : on ne l'y autorise
         # que pour la voie Reasoning (la réflexion est alors renvoyée à part).
         "think": route == "Reasoning",
+        "options": {"num_ctx": BRAIN_NUM_CTX},
         "stream": False,
     }
     response = await client.post(OLLAMA_BRAIN, json=payload)

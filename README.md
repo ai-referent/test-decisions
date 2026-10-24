@@ -18,7 +18,19 @@ un modèle « cerveau » répond.
 
 Variables d'environnement : `DECISION_MODEL` (défaut `kev:4b-q8_0`), `BRAIN_MODEL`
 (défaut `deepseek-r1:14b`) et `OLLAMA_HOST` (défaut `http://localhost:11434`).
-Les mêmes valeurs servent à `setup.sh` et à `router.py`.
+Les mêmes valeurs servent à `setup.sh` et à `router.py`. `BRAIN_NUM_CTX` (défaut
+`8192`, lu par `router.py`) fixe la taille du contexte de deepseek-r1.
 
-Budget VRAM (16 Go) : `deepseek-r1:14b` en q4 occupe environ 9 Go, cache compris ;
-avec `kev:4b-q8_0` (4,5 Go), on arrive à environ 13,5 Go : ça tient, avec peu de marge.
+Budget VRAM (16 Go), ordres de grandeur :
+
+| Élément                                  | VRAM      |
+|------------------------------------------|-----------|
+| `deepseek-r1:14b` q4 (poids)             | ~9 Go     |
+| son cache KV, 8192 tokens                | ~1,5 Go   |
+| `kev:4b-q8_0`                            | ~4,5 Go   |
+| **Total**                                | **~15 Go** |
+
+C'est juste. Vérifier avec `ollama ps` que les deux modèles sont à `100% GPU`.
+Sinon : baisser `BRAIN_NUM_CTX` (4096 divise le cache par deux, mais la réflexion
+risque d'être tronquée), ou quantifier le cache en lançant le serveur avec
+`OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0 ollama serve` (cache ÷ 2).
