@@ -3,7 +3,7 @@ un modèle « cerveau » (deepseek-r1) répond.
 
 Lancer :  python router.py
 Prérequis : Ollama >= 0.35 en local, avec les modèles
-    ollama pull kev:4b
+    ollama pull kev:4b-q8_0
     ollama pull deepseek-r1:14b
 """
 
@@ -16,7 +16,7 @@ OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_DECISION = f"{OLLAMA_HOST}/v1/systemone"
 OLLAMA_BRAIN = f"{OLLAMA_HOST}/api/chat"
 
-DECISION_MODEL = os.environ.get("DECISION_MODEL", "kev:4b")
+DECISION_MODEL = os.environ.get("DECISION_MODEL", "kev:4b-q8_0")
 BRAIN_MODEL = os.environ.get("BRAIN_MODEL", "deepseek-r1:14b")
 
 ROUTING_OPTIONS = {

@@ -4,10 +4,10 @@
 # depuis https://ollama.com/download puis lancer les étapes 3 à 5 à la main)
 #
 # Modèles réglables par variables d'environnement, par exemple :
-#   DECISION_MODEL=kev:4b-q8_0 ./setup.sh
+#   BRAIN_MODEL=deepseek-r1:8b ./setup.sh
 set -euo pipefail
 
-DECISION_MODEL="${DECISION_MODEL:-kev:4b}"
+DECISION_MODEL="${DECISION_MODEL:-kev:4b-q8_0}"
 BRAIN_MODEL="${BRAIN_MODEL:-deepseek-r1:14b}"
 MIN_OLLAMA="0.35.0"
 
